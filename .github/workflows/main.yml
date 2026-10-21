@@ -24,19 +24,17 @@ jobs:
         npx cap add android
         npx cap sync
         
-        # 下面这三行是新增的，用来修复 Kotlin 依赖冲突
-        cat << 'EOF' >> android/build.gradle
-
-allprojects {
-    configurations.all {
-        resolutionStrategy {
-            force 'org.jetbrains.kotlin:kotlin-stdlib:1.9.22'
-            force 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.22'
-            force 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.22'
-        }
-    }
-}
-EOF
+        # 修复 Kotlin 依赖冲突（使用 echo 逐行追加，避免 YAML 缩进报错）
+        echo "" >> android/build.gradle
+        echo "allprojects {" >> android/build.gradle
+        echo "    configurations.all {" >> android/build.gradle
+        echo "        resolutionStrategy {" >> android/build.gradle
+        echo "            force 'org.jetbrains.kotlin:kotlin-stdlib:1.9.22'" >> android/build.gradle
+        echo "            force 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.22'" >> android/build.gradle
+        echo "            force 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.22'" >> android/build.gradle
+        echo "        }" >> android/build.gradle
+        echo "    }" >> android/build.gradle
+        echo "}" >> android/build.gradle
     - name: Build with Gradle
       run: |
         cd android
