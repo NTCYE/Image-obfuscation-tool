@@ -7285,5 +7285,39 @@
         });
     }
 </script>
+<script>
+  // 监听所有点击，拦截下载
+  document.addEventListener('click', async function(e) {
+    const link = e.target.closest('a');
+    // 如果点的是下载按钮
+    if (link && (link.hasAttribute('download') || link.href.startsWith('data:image'))) {
+      e.preventDefault();
+      const base64Data = link.href.split(',')[1];
+      if (!base64Data) return;
+      
+      const fileName = 'Image_' + Date.now() + '.png';
+      
+      try {
+        // 将图片写入手机缓存
+        const { Filesystem } = window.Capacitor.Plugins;
+        const { Share } = window.Capacitor.Plugins;
+        
+        const savedFile = await Filesystem.writeFile({
+          path: fileName,
+          data: base64Data,
+          directory: 'CACHE'
+        });
+        
+        // 调起手机系统的分享/保存菜单
+        await Share.share({
+          title: '保存图片',
+          url: savedFile.uri,
+        });
+      } catch (err) {
+        alert('保存失败，请尝试更新系统: ' + err);
+      }
+    }
+  }, true); 
+</script>    
 </body>
 </html>
