@@ -19,9 +19,10 @@ jobs:
         mkdir www
         cp index.html www/ || true
         npm init -y
-        npm i @capacitor/core @capacitor/cli @capacitor/android
+        npm i @capacitor/core @capacitor/cli @capacitor/android @capacitor/filesystem @capacitor/share
         npx cap init "ImageObfuscationTool" "com.example.imageobfuscation" --web-dir www
         npx cap add android
+        npx cap sync
         npx cap sync
         
         # 修复 Kotlin 依赖冲突（使用 echo 逐行追加，避免 YAML 缩进报错）
