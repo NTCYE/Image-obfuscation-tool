@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: set up JDK 17
+    - name: set up JDK 21
       uses: actions/setup-java@v4
       with:
         java-version: '21'
@@ -20,9 +20,23 @@ jobs:
         cp index.html www/ || true
         npm init -y
         npm i @capacitor/core @capacitor/cli @capacitor/android
-        npx cap init App com.example.app --web-dir www
+        npx cap init "ImageObfuscationTool" "com.example.imageobfuscation" --web-dir www
         npx cap add android
         npx cap sync
+        
+        # 下面这三行是新增的，用来修复 Kotlin 依赖冲突
+        cat << 'EOF' >> android/build.gradle
+
+allprojects {
+    configurations.all {
+        resolutionStrategy {
+            force 'org.jetbrains.kotlin:kotlin-stdlib:1.9.22'
+            force 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.22'
+            force 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.22'
+        }
+    }
+}
+EOF
     - name: Build with Gradle
       run: |
         cd android
